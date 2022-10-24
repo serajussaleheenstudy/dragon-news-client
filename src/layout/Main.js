@@ -9,9 +9,7 @@ import Footer from '../pages/shared/footer/Footer';
 const Main = () => {
     return (
         <div>
-            <Header>
-
-            </Header>
+            <Header></Header>
             <Container>
                 <Row>
                     <Col lg="2" className='d-none d-lg-block'>

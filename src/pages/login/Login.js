@@ -1,15 +1,19 @@
-import React, { useContext } from 'react';
+import toast from 'react-hot-toast';
+import React, { useContext, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/authProvider/AuthProvider';
 
 
 const Login = () => {
 
     const { signIn } = useContext(AuthContext);
-
+    const { error, setError } = useState(''); // error setting
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const from = location.state?.from?.pathname || '/';
 
     const handleSubmit = event => {
         event.preventDefault();
@@ -22,9 +26,22 @@ const Login = () => {
                 const user = result.user;
                 console.log(user);
                 form.reset();
-                navigate('/');
+                setError(''); // error cleaning
+
+                if (user.emailVerified) {
+                    navigate(from, { replace: true });
+                }
+                else {
+                    toast.error('Your email is not verified');
+                }
             })
-            .catch(error => console.log(error))
+            .catch(error => {
+                console.log(error);
+                setError(error.message); // error message showing
+            })
+        // .finally(() => {
+        //     setLoading(false);
+        // })
     }
 
     return (
@@ -40,8 +57,8 @@ const Login = () => {
             <Button variant="primary" type="submit">
                 Login
             </Button>
-            <Form.Text className="text-muted">
-                We'll never share your email with anyone else.
+            <Form.Text className="text-danger">
+                {error}
             </Form.Text>
         </Form>
     );
